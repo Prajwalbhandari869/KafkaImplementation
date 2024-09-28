@@ -1,0 +1,33 @@
+﻿@page "/counter"
+@inject IJSRuntime _jSRuntime;
+@inject IKafkaClientService _kafkaClientService
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private int currentCount = 0;
+
+    private async void IncrementCount()
+    {
+
+        currentCount++;
+        var info = await _jSRuntime.InvokeAsync<BrowserInfo>("getBrowserInfo");
+        var message = new Message();
+        if (info != null)
+        {
+            message.BrowserName = info.BrowserName;
+            message.OS = info.OS;
+            message.Time = info.Time;
+            message.Latitude = info.Latitude;
+            message.Longitude = info.Longitude;
+            message.Count = currentCount;
+        }
+        await _kafkaClientService.ProduceAsync(message);
+    }
+}

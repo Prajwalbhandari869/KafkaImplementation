@@ -1,0 +1,32 @@
+﻿@page "/"
+
+@inject IJSRuntime _jSRuntime;
+@inject IKafkaClientService _kafkaClientService
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        var info = await _jSRuntime.InvokeAsync<BrowserInfo>("getBrowserInfo");
+        var message = new Message();
+        if (info != null)
+        {
+            message.BrowserName = info.BrowserName;
+            message.OS = info.OS;
+            message.Time = info.Time;
+            message.Latitude = info.Latitude;
+            message.Longitude = info.Longitude;
+        }
+        await _kafkaClientService.ProduceAsync(message);
+    }
+
+}

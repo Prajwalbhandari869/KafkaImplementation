@@ -1,0 +1,22 @@
+﻿@page "/consumer"
+
+@inject IJSRuntime _jSRuntime;
+@inject IKafkaClientService _kafkaClientService;
+
+<PageTitle>Consumer</PageTitle>
+
+
+<h3>Consumer</h3>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        var info = await _jSRuntime.InvokeAsync<BrowserInfo>("getBrowserInfo");
+        if (info != null)
+        {
+            var result = await _kafkaClientService.ConsumeAsync(info.BrowserName);
+        }
+    }
+
+}
